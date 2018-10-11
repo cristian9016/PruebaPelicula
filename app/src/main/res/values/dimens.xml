@@ -2,4 +2,5 @@
 <resources>
     <dimen name="nav_header_text_size">30sp</dimen>
     <dimen name="padding_8">8dp</dimen>
+    <dimen name="small">8dp</dimen>
 </resources>

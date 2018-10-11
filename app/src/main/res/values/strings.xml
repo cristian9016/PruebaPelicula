@@ -6,4 +6,6 @@
     <string name="upcoming_text">Upcoming</string>
     <string name="series_text">Series</string>
     <string name="the_movie_db">The Movie DB</string>
+    <string name="opened_menu">Menu Abierto</string>
+    <string name="closed_menu">Menu Cerrado</string>
 </resources>

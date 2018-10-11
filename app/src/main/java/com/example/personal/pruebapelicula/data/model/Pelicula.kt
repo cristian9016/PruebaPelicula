@@ -10,7 +10,6 @@ import kotlinx.android.parcel.Parcelize
 @Entity
 @Parcelize
 class Pelicula (@PrimaryKey var id_pelicula:Long?,
-                var id:Long,
                 var title:String,
                 var overview:String,
                 var poster_path:String,
@@ -18,6 +17,6 @@ class Pelicula (@PrimaryKey var id_pelicula:Long?,
                 var vote_average:Float,
                 var genero:Int):Parcelable{
     @Ignore
-    constructor(id: Long,title: String,overview: String,poster_path: String,release_date: String,vote_average: Float,genero: Int):
-            this(null,id,title,overview,poster_path,release_date,vote_average,genero)
+    constructor(title: String,overview: String,poster_path: String,release_date: String,vote_average: Float,genero: Int):
+            this(null,title,overview,poster_path,release_date,vote_average,genero)
 }
