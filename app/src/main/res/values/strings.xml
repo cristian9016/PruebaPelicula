@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">PruebaPelicula</string>
+    <string name="peliculas_text">Peliculas</string>
+    <string name="popular_text">Popular</string>
+    <string name="top_rated_text">Top Rated</string>
+    <string name="upcoming_text">Upcoming</string>
+    <string name="series_text">Series</string>
+    <string name="the_movie_db">The Movie DB</string>
+</resources>
