@@ -11,6 +11,7 @@ import com.example.personal.pruebapelicula.net.SerieClient
 import com.example.personal.pruebapelicula.ui.SearchBarActivity
 import com.example.personal.pruebapelicula.util.Constants
 import com.example.personal.pruebapelicula.util.applySchedulers
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 
@@ -86,4 +87,26 @@ class MainViewModel(private val peliculaClient: PeliculaClient,
                 }
             }
             .applySchedulers()
+
+    fun searchMovieOrSerieOffline() = SearchBarActivity.query
+            .startWith("")
+            .flatMap {
+                if (!it.equals("")) {
+                    peliculaDao.searchMovie(it).toObservable()
+                            .zipWith(serieDao.searchSerie(it).toObservable(),
+                                    BiFunction { t1: List<Pelicula>, t2: List<Serie> ->
+                                        val list = mutableListOf<MainActivity.ItemType>()
+                                        for (pelicula in t1) {
+                                            list.add(MainActivity.ItemType(pelicula, Constants.type_movie))
+                                        }
+                                        for(serie in t2){
+                                            list.add(MainActivity.ItemType(serie, Constants.type_serie))
+                                        }
+                                        list
+                                    }
+                            ).applySchedulers()
+                }else{
+                    Observable.just(mutableListOf())
+                }
+            }
 }

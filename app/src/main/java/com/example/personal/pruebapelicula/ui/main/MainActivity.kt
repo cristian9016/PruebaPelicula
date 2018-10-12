@@ -55,11 +55,24 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
                             adapter.data = it
                         },
                         onError = {
-                            toast(it.message!!)
+                            searchMovieOrSerieOffline()
                         }
                 )
     }
 
+    private fun searchMovieOrSerieOffline(){
+        dis add viewModel.searchMovieOrSerieOffline()
+                .subscribeBy (
+                        onNext = {
+                            adapter.data = it
+                        },
+                        onError = {
+                            noInformation.visibility = View.VISIBLE
+                            it.printStackTrace()
+                            toast(it.message!!)
+                        }
+                )
+    }
     private fun setContent(item: MenuItem?): Boolean {
         drawer.closeDrawers()
         when (item?.itemId) {
