@@ -6,11 +6,13 @@ import com.example.personal.pruebapelicula.data.dao.SerieDao
 import com.example.personal.pruebapelicula.data.model.Pelicula
 import com.example.personal.pruebapelicula.data.model.Serie
 import com.example.personal.pruebapelicula.net.PeliculaClient
+import com.example.personal.pruebapelicula.net.ResponseData
 import com.example.personal.pruebapelicula.net.SerieClient
 import com.example.personal.pruebapelicula.ui.SearchBarActivity
 import com.example.personal.pruebapelicula.util.Constants
 import com.example.personal.pruebapelicula.util.applySchedulers
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 
 class MainViewModel(private val peliculaClient: PeliculaClient,
                     private val peliculaDao: PeliculaDao,
@@ -62,6 +64,26 @@ class MainViewModel(private val peliculaClient: PeliculaClient,
 
     fun searchMovieOrSerie() = SearchBarActivity.query
             .startWith("")
-            .map {}
+            .flatMap {
+                if (!it.equals("")) {
+                    peliculaClient.searchMovie(Constants.TOKEN, Constants.appKey, it, "es-ES")
+                            .zipWith(serieClient.searchSerie(Constants.TOKEN, Constants.appKey, it, "es-ES"),
+                                    BiFunction { t1: ResponseData<Pelicula>, t2: ResponseData<Serie> ->
+                                        val list = mutableListOf<MainActivity.ItemType>()
+                                        for (pelicula in t1.results) {
+                                            if (peliculaDao.getMovie(pelicula.id) == null) peliculaDao.insert(pelicula)
+                                            list.add(MainActivity.ItemType(pelicula, Constants.type_movie))
+                                        }
+                                        for(serie in t2.results){
+                                            if (serieDao.getSerie(serie.id) == null) serieDao.insert(serie)
+                                            list.add(MainActivity.ItemType(serie, Constants.type_serie))
+                                        }
+                                        list
+                                    }
+                            ).applySchedulers()
+                }else{
+                    Observable.just(mutableListOf())
+                }
+            }
             .applySchedulers()
 }

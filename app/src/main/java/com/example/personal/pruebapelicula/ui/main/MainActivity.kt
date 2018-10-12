@@ -49,7 +49,14 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         dis add adapter.onClickSerie
                 .subscribe { startActivity<DetailActivity>(SERIE to it) }
         dis add viewModel.searchMovieOrSerie()
-                .subscribe()
+                .subscribeBy(
+                        onNext = {
+                            adapter.data = it
+                        },
+                        onError = {
+                            toast(it.message!!)
+                        }
+                )
     }
 
     private fun setContent(item: MenuItem?): Boolean {
@@ -84,7 +91,7 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         dis add viewModel.getDataOnline(option)
                 .subscribeBy(
                         onNext = {
-                            adapter.data = it as MutableList
+                            adapter.data = it
                         },
                         onError = { getDataOffline(option) }
                 )
