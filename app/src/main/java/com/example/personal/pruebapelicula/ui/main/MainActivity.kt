@@ -39,11 +39,12 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         list.adapter = adapter
         list.layoutManager = LinearLayoutManager(this)
         title = resources.getString(R.string.title_movie_popular)
-        getDataOnline(option)
+
     }
 
     override fun onResume() {
         super.onResume()
+        getDataOnline(option)
         dis add adapter.onClickPelicula
                 .subscribe { startActivity<DetailActivity>(PELICULA to it) }
         dis add adapter.onClickSerie
