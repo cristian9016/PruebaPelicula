@@ -3,21 +3,22 @@ package com.example.personal.pruebapelicula.ui.main
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import android.view.View
 import com.example.personal.pruebapelicula.R
+import com.example.personal.pruebapelicula.ui.SearchBarActivity
 import com.example.personal.pruebapelicula.ui.adapter.GeneralAdapter
 import com.example.personal.pruebapelicula.ui.detail.DetailActivity
 import com.example.personal.pruebapelicula.util.Constants
 import com.example.personal.pruebapelicula.util.LifeDisposable
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
+class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
 
     val toogle: ActionBarDrawerToggle by lazy {
         ActionBarDrawerToggle(this, drawer, R.string.opened_menu, R.string.closed_menu)
@@ -25,17 +26,20 @@ class MainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
     lateinit var adapter: GeneralAdapter
     val viewModel: MainViewModel by viewModel()
     val dis = LifeDisposable(this)
+    var option = Constants.GENRE_MOVIE_POPULAR
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        if (savedInstanceState != null) option = savedInstanceState.getInt(OPTION)
         drawer.addDrawerListener(this)
         navigation.setNavigationItemSelectedListener { setContent(it) }
         adapter = GeneralAdapter()
         list.adapter = adapter
         list.layoutManager = LinearLayoutManager(this)
-        getData(Constants.GENRE_MOVIE_POPULAR)
+        title = resources.getString(R.string.title_movie_popular)
+        getDataOnline(option)
     }
 
     override fun onResume() {
@@ -44,26 +48,64 @@ class MainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
                 .subscribe { startActivity<DetailActivity>(PELICULA to it) }
         dis add adapter.onClickSerie
                 .subscribe { startActivity<DetailActivity>(SERIE to it) }
+        dis add viewModel.searchMovieOrSerie()
+                .subscribe()
     }
 
     private fun setContent(item: MenuItem?): Boolean {
         drawer.closeDrawers()
         when (item?.itemId) {
-            R.id.movie_popular -> getData(Constants.GENRE_MOVIE_POPULAR)
-            R.id.movie_toprated -> getData(Constants.GENRE_MOVIE_TOP_RATED)
-            R.id.movie_upcoming -> getData(Constants.GENRE_MOVIE_UPCOMING)
-            R.id.series_popular -> getData(Constants.GENRE_SERIE_POPULAR)
-            R.id.series_top_rated -> getData(Constants.GENRE_SERIE_TOP_RATED)
-            R.id.serie_upcoming -> getData(Constants.GENRE_SERIE_UPCOMING)
+            R.id.movie_popular -> {
+                title = resources.getString(R.string.title_movie_popular)
+                getDataOnline(Constants.GENRE_MOVIE_POPULAR)
+            }
+            R.id.movie_toprated -> {
+                title = resources.getString(R.string.title_movie_TopRated)
+                getDataOnline(Constants.GENRE_MOVIE_TOP_RATED)
+            }
+            R.id.movie_upcoming -> {
+                title = resources.getString(R.string.title_movie_Upcoming)
+                getDataOnline(Constants.GENRE_MOVIE_UPCOMING)
+            }
+            R.id.series_popular -> {
+                title = resources.getString(R.string.title_serie_popular)
+                getDataOnline(Constants.GENRE_SERIE_POPULAR)
+            }
+            R.id.series_top_rated -> {
+                title = resources.getString(R.string.title_serie_topRated)
+                getDataOnline(Constants.GENRE_SERIE_TOP_RATED)
+            }
         }
         return true
     }
 
-    private fun getData(option: Int) {
-        dis add viewModel.getItems(option)
-                .subscribe(
-                        { adapter.data = it as MutableList },
-                        { toast(it.message!!)}
+    private fun getDataOnline(option: Int) {
+        this.option = option
+        dis add viewModel.getDataOnline(option)
+                .subscribeBy(
+                        onNext = {
+                            adapter.data = it as MutableList
+                        },
+                        onError = { getDataOffline(option) }
+                )
+    }
+
+    fun getDataOffline(option: Int) {
+        dis add viewModel.getDataOffline(option)
+                .subscribeBy(
+                        onNext = {
+                            if (it.isEmpty()) noInformation.visibility = View.VISIBLE
+                            else noInformation.visibility = View.GONE
+                            adapter.data = it
+                        },
+                        onError = {
+                            noInformation.visibility = View.VISIBLE
+                            it.printStackTrace()
+                            toast(it.message!!)
+                        },
+                        onComplete = {
+                            toast("no encontrado")
+                        }
                 )
     }
 
@@ -85,9 +127,14 @@ class MainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
 
     override fun onDrawerOpened(p0: View) = toogle.onDrawerOpened(p0)
 
-    class ItemType(val item: Any, val type: Int)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState!!.putInt(OPTION, option)
+        super.onSaveInstanceState(outState)
+    }
 
+    class ItemType(val item: Any, val type: Int)
     companion object {
+        const val OPTION = "option"
         const val PELICULA = "pelicula"
         const val SERIE = "serie"
     }

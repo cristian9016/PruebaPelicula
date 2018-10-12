@@ -26,9 +26,6 @@
             <item
                 android:id="@+id/series_top_rated"
                 android:title="@string/top_rated_text" />
-            <item
-                android:id="@+id/serie_upcoming"
-                android:title="@string/upcoming_text" />
         </menu>
     </item>
 </menu>

@@ -17,4 +17,7 @@ interface PeliculaClient {
     @GET("/3/movie/upcoming")
     fun getUpcomingPeliculas(@Header("Authorization") token: String, @Query("api_key") key: String, @Query("language") language: String): Observable<ResponseData<Pelicula>>
 
+    @GET("/3/search/movie")
+    fun searchMovie(@Header("Authorization") token: String, @Query("api_key") key: String, @Query("query") query: String, @Query("language") language: String): Observable<ResponseData<Pelicula>>
+
 }

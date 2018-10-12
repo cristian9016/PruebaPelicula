@@ -13,4 +13,9 @@ interface SerieClient {
     @GET("/3/tv/top_rated")
     fun getTopRatedSeries(@Header("Authorization") token:String, @Query("api_key") key:String,@Query("language")language:String): Observable<ResponseData<Serie>>
 
+    @GET("/3/tv/latest")
+    fun getLatestSeries(@Header("Authorization") token:String, @Query("api_key") key:String,@Query("language")language:String): Observable<ResponseData<Serie>>
+
+    @GET("/3/search/movie")
+    fun searchSerie(@Header("Authorization") token: String, @Query("api_key") key: String, @Query("query") query: String, @Query("language") language: String): Observable<ResponseData<Serie>>
 }

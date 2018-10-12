@@ -7,6 +7,7 @@ import android.arch.lifecycle.OnLifecycleEvent
 import com.example.personal.pruebapelicula.net.ResponseData
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -38,6 +39,11 @@ fun <T> Flowable<T>.applySchedulers(): Flowable<T> {
 }
 
 fun <T> Observable<T>.applySchedulers(): Observable<T> = compose {
+    it.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+}
+
+fun <T> Single<T>.applySchedulers(): Single<T> = compose {
     it.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 }

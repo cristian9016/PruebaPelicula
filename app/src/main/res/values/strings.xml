@@ -8,4 +8,15 @@
     <string name="the_movie_db">The Movie DB</string>
     <string name="opened_menu">Menu Abierto</string>
     <string name="closed_menu">Menu Cerrado</string>
+    <string name="item_name">Name of the Item</string>
+    <string name="description_text">Descripcion del item</string>
+    <string name="rating">R</string>
+    <string name="no_data">No hay Información, intente de nuevo.</string>
+    <string name="sinopsis_text">Sinopsis</string>
+    <string name="title_movie_popular">"Peliculas: Popular"</string>
+    <string name="title_movie_TopRated">"Peliculas: Top Rated"</string>
+    <string name="title_movie_Upcoming">"Peliculas: Upcoming"</string>
+    <string name="title_serie_popular">"Series: Popular"</string>
+    <string name="title_serie_topRated">"Series: Top Rated"</string>
+
 </resources>

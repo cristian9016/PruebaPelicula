@@ -9,15 +9,12 @@ interface SerieDao{
     @Insert
     fun insert(serie: Serie)
 
-    @Update
-    fun update(serie: Serie)
+    @Query("SELECT * FROM Serie WHERE id = :id")
+    fun getSerie(id: Long): Serie
 
-    @Delete
-    fun delete(serie: Serie)
-
-    @Query("SELECT * FROM serie WHERE genero = :genero")
+    @Query("SELECT * FROM Serie WHERE genero = :genero")
     fun all(genero:Int): Flowable<List<Serie>>
 
-    @Query("DELETE FROM serie")
-    fun deleteAll()
+    @Query("SELECT * FROM Serie WHERE name like '%'+:name+'%'")
+    fun searchSerie(name: String): Flowable<List<Serie>>
 }
