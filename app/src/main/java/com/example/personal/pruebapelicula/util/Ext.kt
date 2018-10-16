@@ -31,11 +31,3 @@ fun View.visible(){
 fun View.gone(){
     visibility = View.GONE
 }
-//
-//fun ProgressBar.visible() {
-//    visibility = View.VISIBLE
-//}
-//
-//fun ProgressBar.gone(){
-//    visibility = View.GONE
-//}
