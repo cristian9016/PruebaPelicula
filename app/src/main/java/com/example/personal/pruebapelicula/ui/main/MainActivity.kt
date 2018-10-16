@@ -10,8 +10,7 @@ import com.example.personal.pruebapelicula.R
 import com.example.personal.pruebapelicula.ui.SearchBarActivity
 import com.example.personal.pruebapelicula.ui.adapter.GeneralAdapter
 import com.example.personal.pruebapelicula.ui.detail.DetailActivity
-import com.example.personal.pruebapelicula.util.Constants
-import com.example.personal.pruebapelicula.util.LifeDisposable
+import com.example.personal.pruebapelicula.util.*
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
@@ -38,12 +37,12 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         adapter = GeneralAdapter()
         list.adapter = adapter
         title = resources.getString(R.string.title_movie_popular)
-
+        loader.visible()
+        getDataOnline(option)
     }
 
     override fun onResume() {
         super.onResume()
-        getDataOnline(option)
 
         dis add adapter.onClickPelicula
                 .subscribe { startActivity<DetailActivity>(PELICULA to it) }
@@ -54,12 +53,13 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         dis add viewModel.searchMovieOrSerie()
                 .subscribeBy(
                         onNext = {
-                            adapter.data = it
+                            if (it.isNotEmpty()) adapter.data = it
                         },
                         onError = {
                             toast("Error, intente de nuevo mas tarde")
                         }
                 )
+        dis add onSearchCloseListener.subscribe { getDataOnline(option) }
     }
 
     private fun getDataOnline(option: Int) {
@@ -68,6 +68,8 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
                 .subscribeBy(
                         onNext = {
                             adapter.data = it
+                            loader.gone()
+                            list.visible()
                         },
                         onError = { getDataOffline(option) }
                 )
@@ -77,23 +79,31 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         dis add viewModel.getDataOffline(option)
                 .subscribeBy(
                         onNext = {
+                            loader.gone()
                             if (it.isEmpty()) noInformation.visibility = View.VISIBLE
                             else noInformation.visibility = View.GONE
                             adapter.data = it
+                            loader.gone()
+                            list.visible()
+
                         },
                         onError = {
+                            loader.gone()
+                            list.visible()
                             noInformation.visibility = View.VISIBLE
-                            it.printStackTrace()
-                            toast(it.message!!)
-                        },
-                        onComplete = {
-                            toast("no encontrado")
                         }
                 )
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        getDataOnline(option)
+    }
+
     private fun setContent(item: MenuItem?): Boolean {
         drawer.closeDrawers()
+        loader.visible()
+        list.gone()
         when (item?.itemId) {
             R.id.movie_popular -> {
                 title = resources.getString(R.string.title_movie_popular)
@@ -142,7 +152,6 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         super.onSaveInstanceState(outState)
     }
 
-    class ItemType(val item: Any, val type: Int)
     companion object {
         const val OPTION = "option"
         const val PELICULA = "pelicula"

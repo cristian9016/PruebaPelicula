@@ -9,14 +9,14 @@ import com.example.personal.pruebapelicula.data.model.Pelicula
 import com.example.personal.pruebapelicula.data.model.Serie
 import com.example.personal.pruebapelicula.databinding.TemplatePeliculaBinding
 import com.example.personal.pruebapelicula.databinding.TemplateSerieBinding
-import com.example.personal.pruebapelicula.ui.main.MainActivity
 import com.example.personal.pruebapelicula.util.Constants
+import com.example.personal.pruebapelicula.util.ItemType
 import com.example.personal.pruebapelicula.util.inflate
 import io.reactivex.subjects.PublishSubject
 
 class GeneralAdapter:RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var data : MutableList<MainActivity.ItemType>  = mutableListOf()
+    var data : MutableList<ItemType>  = mutableListOf()
     set(value) {
         field = value
         notifyDataSetChanged()

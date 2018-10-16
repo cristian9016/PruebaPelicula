@@ -37,6 +37,7 @@ open class SearchBarActivity: AppCompatActivity(){
         searchView.setOnSearchClickListener { supportActionBar?.setDisplayHomeAsUpEnabled(false) }
         searchView.setOnCloseListener {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            onSearchCloseListener.onNext(true)
             false
         }
         queryDis = searchView.queryTextChanges()
@@ -49,12 +50,13 @@ open class SearchBarActivity: AppCompatActivity(){
     }
 
     override fun onBackPressed() {
-        if(searchView.isIconified != false) super.onBackPressed()
+        if(searchView.isIconified) super.onBackPressed()
         else searchView.isIconified = true
     }
 
     companion object {
         val query: PublishSubject<String> = PublishSubject.create()
+        val onSearchCloseListener:PublishSubject<Boolean> = PublishSubject.create()
     }
 
 }

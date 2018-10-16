@@ -8,8 +8,8 @@ import com.example.personal.pruebapelicula.net.PeliculaClient
 import com.example.personal.pruebapelicula.net.ResponseData
 import com.example.personal.pruebapelicula.net.SerieClient
 import com.example.personal.pruebapelicula.ui.SearchBarActivity
-import com.example.personal.pruebapelicula.ui.main.MainActivity
 import com.example.personal.pruebapelicula.util.Constants
+import com.example.personal.pruebapelicula.util.ItemType
 import com.example.personal.pruebapelicula.util.applySchedulers
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -19,7 +19,7 @@ class MainRepository(private val peliculaClient: PeliculaClient,
                      private val serieClient: SerieClient,
                      private val serieDao: SerieDao) {
 
-    fun getDataOnline(option: Int): Observable<MutableList<MainActivity.ItemType>> = when (option) {
+    fun getDataOnline(option: Int): Observable<MutableList<ItemType>> = when (option) {
         Constants.GENRE_MOVIE_POPULAR -> peliculaClient.getPopularPeliculas(Constants.TOKEN, Constants.appKey, "es-ES")
         Constants.GENRE_MOVIE_TOP_RATED -> peliculaClient.getTopRatedPeliculas(Constants.TOKEN, Constants.appKey, "es-ES")
         Constants.GENRE_MOVIE_UPCOMING -> peliculaClient.getUpcomingPeliculas(Constants.TOKEN, Constants.appKey, "es-ES")
@@ -40,23 +40,23 @@ class MainRepository(private val peliculaClient: PeliculaClient,
             }
             .flatMapIterable { it }
             .map {
-                if (it is Pelicula) return@map MainActivity.ItemType(it, Constants.type_movie)
-                else return@map MainActivity.ItemType(it as Serie, Constants.type_serie)
+                if (it is Pelicula) return@map ItemType(it, Constants.type_movie)
+                else return@map ItemType(it as Serie, Constants.type_serie)
             }
             .toList()
             .toObservable()
             .applySchedulers()
 
-    fun getDataOffline(option: Int): Observable<MutableList<MainActivity.ItemType>> = when (option) {
+    fun getDataOffline(option: Int): Observable<MutableList<ItemType>> = when (option) {
         Constants.GENRE_MOVIE_POPULAR, Constants.GENRE_MOVIE_TOP_RATED, Constants.GENRE_MOVIE_UPCOMING ->
             peliculaDao.all(option).toObservable()
         else -> serieDao.all(option).toObservable()
     }
             .map {
-                val list = mutableListOf<MainActivity.ItemType>()
+                val list = mutableListOf<ItemType>()
                 for (item in it) {
-                    if (item is Pelicula) list.add(MainActivity.ItemType(item, Constants.type_movie))
-                    else list.add(MainActivity.ItemType(item as Serie, Constants.type_serie))
+                    if (item is Pelicula) list.add(ItemType(item, Constants.type_movie))
+                    else list.add(ItemType(item as Serie, Constants.type_serie))
                 }
                 list
             }
@@ -69,14 +69,14 @@ class MainRepository(private val peliculaClient: PeliculaClient,
                     peliculaClient.searchMovie(Constants.TOKEN, Constants.appKey, it, "es-ES")
                             .zipWith(serieClient.searchSerie(Constants.TOKEN, Constants.appKey, it, "es-ES"),
                                     BiFunction { t1: ResponseData<Pelicula>, t2: ResponseData<Serie> ->
-                                        val list = mutableListOf<MainActivity.ItemType>()
+                                        val list = mutableListOf<ItemType>()
                                         for (pelicula in t1.results) {
                                             if (peliculaDao.getMovie(pelicula.id) == null) peliculaDao.insert(pelicula)
-                                            list.add(MainActivity.ItemType(pelicula, Constants.type_movie))
+                                            list.add(ItemType(pelicula, Constants.type_movie))
                                         }
                                         for(serie in t2.results){
                                             if (serieDao.getSerie(serie.id) == null) serieDao.insert(serie)
-                                            list.add(MainActivity.ItemType(serie, Constants.type_serie))
+                                            list.add(ItemType(serie, Constants.type_serie))
                                         }
                                         list
                                     }
@@ -87,20 +87,21 @@ class MainRepository(private val peliculaClient: PeliculaClient,
             }
             .applySchedulers()
 
+    //La funcion de abajo se crea con el fin de realizar el test unitario
     fun searchMovieOrSerieForUnitTest() = Observable.just("prueba")
             .flatMap {
                 if (!it.equals("")) {
                     peliculaClient.searchMovie(Constants.TOKEN, Constants.appKey, it, "es-ES")
                             .zipWith(serieClient.searchSerie(Constants.TOKEN, Constants.appKey, it, "es-ES"),
                                     BiFunction { t1: ResponseData<Pelicula>, t2: ResponseData<Serie> ->
-                                        val list = mutableListOf<MainActivity.ItemType>()
+                                        val list = mutableListOf<ItemType>()
                                         for (pelicula in t1.results) {
                                             if (peliculaDao.getMovie(pelicula.id) == null) peliculaDao.insert(pelicula)
-                                            list.add(MainActivity.ItemType(pelicula, Constants.type_movie))
+                                            list.add(ItemType(pelicula, Constants.type_movie))
                                         }
                                         for(serie in t2.results){
                                             if (serieDao.getSerie(serie.id) == null) serieDao.insert(serie)
-                                            list.add(MainActivity.ItemType(serie, Constants.type_serie))
+                                            list.add(ItemType(serie, Constants.type_serie))
                                         }
                                         list
                                     }
