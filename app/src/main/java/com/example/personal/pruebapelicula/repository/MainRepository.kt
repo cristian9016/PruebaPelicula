@@ -1,4 +1,4 @@
-package com.example.personal.pruebapelicula.data.repository
+package com.example.personal.pruebapelicula.repository
 
 import com.example.personal.pruebapelicula.data.dao.PeliculaDao
 import com.example.personal.pruebapelicula.data.dao.SerieDao
@@ -87,18 +87,19 @@ class MainRepository(private val peliculaClient: PeliculaClient,
             }
             .applySchedulers()
 
-    fun searchMovieOrSerieOffline() = SearchBarActivity.query
-            .startWith("")
+    fun searchMovieOrSerieForUnitTest() = Observable.just("prueba")
             .flatMap {
                 if (!it.equals("")) {
-                    peliculaDao.searchMovie(it).toObservable()
-                            .zipWith(serieDao.searchSerie(it).toObservable(),
-                                    BiFunction { t1: List<Pelicula>, t2: List<Serie> ->
+                    peliculaClient.searchMovie(Constants.TOKEN, Constants.appKey, it, "es-ES")
+                            .zipWith(serieClient.searchSerie(Constants.TOKEN, Constants.appKey, it, "es-ES"),
+                                    BiFunction { t1: ResponseData<Pelicula>, t2: ResponseData<Serie> ->
                                         val list = mutableListOf<MainActivity.ItemType>()
-                                        for (pelicula in t1) {
+                                        for (pelicula in t1.results) {
+                                            if (peliculaDao.getMovie(pelicula.id) == null) peliculaDao.insert(pelicula)
                                             list.add(MainActivity.ItemType(pelicula, Constants.type_movie))
                                         }
-                                        for(serie in t2){
+                                        for(serie in t2.results){
+                                            if (serieDao.getSerie(serie.id) == null) serieDao.insert(serie)
                                             list.add(MainActivity.ItemType(serie, Constants.type_serie))
                                         }
                                         list
@@ -108,4 +109,7 @@ class MainRepository(private val peliculaClient: PeliculaClient,
                     Observable.just(mutableListOf())
                 }
             }
+            .applySchedulers()
+
+
 }

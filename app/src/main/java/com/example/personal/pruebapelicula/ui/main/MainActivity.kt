@@ -37,7 +37,6 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
         navigation.setNavigationItemSelectedListener { setContent(it) }
         adapter = GeneralAdapter()
         list.adapter = adapter
-        list.layoutManager = LinearLayoutManager(this)
         title = resources.getString(R.string.title_movie_popular)
 
     }
@@ -45,59 +44,22 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
     override fun onResume() {
         super.onResume()
         getDataOnline(option)
+
         dis add adapter.onClickPelicula
                 .subscribe { startActivity<DetailActivity>(PELICULA to it) }
+
         dis add adapter.onClickSerie
                 .subscribe { startActivity<DetailActivity>(SERIE to it) }
+
         dis add viewModel.searchMovieOrSerie()
                 .subscribeBy(
                         onNext = {
                             adapter.data = it
                         },
                         onError = {
-                            searchMovieOrSerieOffline()
+                            toast("Error, intente de nuevo mas tarde")
                         }
                 )
-    }
-
-    private fun searchMovieOrSerieOffline(){
-        dis add viewModel.searchMovieOrSerieOffline()
-                .subscribeBy (
-                        onNext = {
-                            adapter.data = it
-                        },
-                        onError = {
-                            noInformation.visibility = View.VISIBLE
-                            it.printStackTrace()
-                            toast(it.message!!)
-                        }
-                )
-    }
-    private fun setContent(item: MenuItem?): Boolean {
-        drawer.closeDrawers()
-        when (item?.itemId) {
-            R.id.movie_popular -> {
-                title = resources.getString(R.string.title_movie_popular)
-                getDataOnline(Constants.GENRE_MOVIE_POPULAR)
-            }
-            R.id.movie_toprated -> {
-                title = resources.getString(R.string.title_movie_TopRated)
-                getDataOnline(Constants.GENRE_MOVIE_TOP_RATED)
-            }
-            R.id.movie_upcoming -> {
-                title = resources.getString(R.string.title_movie_Upcoming)
-                getDataOnline(Constants.GENRE_MOVIE_UPCOMING)
-            }
-            R.id.series_popular -> {
-                title = resources.getString(R.string.title_serie_popular)
-                getDataOnline(Constants.GENRE_SERIE_POPULAR)
-            }
-            R.id.series_top_rated -> {
-                title = resources.getString(R.string.title_serie_topRated)
-                getDataOnline(Constants.GENRE_SERIE_TOP_RATED)
-            }
-        }
-        return true
     }
 
     private fun getDataOnline(option: Int) {
@@ -128,6 +90,33 @@ class MainActivity : SearchBarActivity(), DrawerLayout.DrawerListener {
                             toast("no encontrado")
                         }
                 )
+    }
+
+    private fun setContent(item: MenuItem?): Boolean {
+        drawer.closeDrawers()
+        when (item?.itemId) {
+            R.id.movie_popular -> {
+                title = resources.getString(R.string.title_movie_popular)
+                getDataOnline(Constants.GENRE_MOVIE_POPULAR)
+            }
+            R.id.movie_toprated -> {
+                title = resources.getString(R.string.title_movie_TopRated)
+                getDataOnline(Constants.GENRE_MOVIE_TOP_RATED)
+            }
+            R.id.movie_upcoming -> {
+                title = resources.getString(R.string.title_movie_Upcoming)
+                getDataOnline(Constants.GENRE_MOVIE_UPCOMING)
+            }
+            R.id.series_popular -> {
+                title = resources.getString(R.string.title_serie_popular)
+                getDataOnline(Constants.GENRE_SERIE_POPULAR)
+            }
+            R.id.series_top_rated -> {
+                title = resources.getString(R.string.title_serie_topRated)
+                getDataOnline(Constants.GENRE_SERIE_TOP_RATED)
+            }
+        }
+        return true
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {

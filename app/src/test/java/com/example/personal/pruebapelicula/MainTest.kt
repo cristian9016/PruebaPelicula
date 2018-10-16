@@ -5,7 +5,7 @@ import com.example.personal.getgithubprofile.util.TrampolineSchedulerRule
 import com.example.personal.pruebapelicula.data.dao.PeliculaDao
 import com.example.personal.pruebapelicula.data.dao.SerieDao
 import com.example.personal.pruebapelicula.data.model.Pelicula
-import com.example.personal.pruebapelicula.data.repository.MainRepository
+import com.example.personal.pruebapelicula.repository.MainRepository
 import com.example.personal.pruebapelicula.net.PeliculaClient
 import com.example.personal.pruebapelicula.net.SerieClient
 import io.reactivex.Flowable
@@ -74,6 +74,17 @@ class MainTest {
     fun testDataOnline() {
         repository.getDataOnline(0)
                 .test()
-                .assertValue { it.size == 1 }
+                .assertValue {
+                    it.size == 2
+                }
+    }
+
+    @Test
+    fun searchDataOnline() {
+        repository.searchMovieOrSerieForUnitTest()
+                .test()
+                .assertValue {
+                    it.size == 4
+                }
     }
 }

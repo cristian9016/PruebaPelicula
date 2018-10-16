@@ -8,7 +8,7 @@ import com.example.personal.pruebapelicula.net.PeliculaClient
 import com.example.personal.pruebapelicula.net.SerieClient
 import com.example.personal.pruebapelicula.ui.detail.DetailViewModel
 import com.example.personal.pruebapelicula.ui.main.MainViewModel
-import com.example.personal.pruebapelicula.data.repository.MainRepository
+import com.example.personal.pruebapelicula.repository.MainRepository
 import com.example.personal.pruebapelicula.util.Constants
 import com.google.gson.GsonBuilder
 import org.koin.android.ext.koin.androidApplication
