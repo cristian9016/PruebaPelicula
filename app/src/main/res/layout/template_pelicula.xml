@@ -11,16 +11,16 @@
             name="clickPelicula"
             type="io.reactivex.subjects.PublishSubject"/>
     </data>
+
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/small"
         android:layout_marginLeft="@dimen/small"
         android:layout_marginTop="@dimen/small"
-        app:cardCornerRadius="@dimen/cardview_default_radius"
+        android:layout_marginRight="@dimen/small"
         android:elevation="4dp"
         android:onClick='@{()->clickPelicula.onNext(pelicula)}'
-        >
+        app:cardCornerRadius="4dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -28,79 +28,84 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="133dp"
-                android:layout_height="135dp"
-                android:layout_marginBottom="8dp"
+                android:layout_width="@dimen/img_size"
+                android:layout_height="@dimen/img_size"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="#3333"
+                android:scaleType="centerCrop"
                 app:imgUrl='@{pelicula.poster_path}'
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                android:background="#3333"
-                android:scaleType="centerCrop"/>
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/movieTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:text="@{pelicula.title}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Movie Title" />
+                tools:text="@string/movie_title_text" />
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView"
-                android:text="Vote Average:" />
+                android:text="@string/vote_average"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintStart_toEndOf="@+id/imageView" />
 
             <TextView
                 android:id="@+id/voteAverage"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:text='@{pelicula.vote_average+""}'
                 app:layout_constraintStart_toEndOf="@+id/textView2"
-                tools:text="4.5"
-                android:text='@{pelicula.vote_average+""}'/>
+                app:layout_constraintTop_toTopOf="@+id/textView2"
+                tools:text="4.5" />
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
+                android:text="@string/first_air_date_text"
                 app:layout_constraintBottom_toTopOf="@+id/textView2"
-                app:layout_constraintStart_toEndOf="@+id/imageView"
-                android:text="Release date:" />
+                app:layout_constraintStart_toEndOf="@+id/imageView" />
 
             <TextView
                 android:id="@+id/releaseDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/voteAverage"
-                app:layout_constraintStart_toStartOf="@+id/voteAverage"
-                tools:text="12/11/2017"
-                android:text="@{pelicula.release_date}"/>
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@{pelicula.release_date}"
+                app:layout_constraintStart_toEndOf="@+id/textView4"
+                app:layout_constraintTop_toTopOf="@+id/textView4"
+                tools:text="@string/date_text" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="@dimen/star_size"
+                android:layout_height="@dimen/star_size"
+                app:layout_constraintBottom_toBottomOf="@+id/voteAverage"
+                app:layout_constraintStart_toEndOf="@+id/voteAverage"
+                app:layout_constraintTop_toTopOf="@+id/voteAverage"
+                app:srcCompat="@drawable/ic_star_border" />
 
         </android.support.constraint.ConstraintLayout>
 

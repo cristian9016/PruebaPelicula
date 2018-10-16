@@ -18,5 +18,9 @@
     <string name="title_movie_Upcoming">"Peliculas: Upcoming"</string>
     <string name="title_serie_popular">"Series: Popular"</string>
     <string name="title_serie_topRated">"Series: Top Rated"</string>
+    <string name="vote_average">Votos:</string>
+    <string name="date_text">12/11/2017</string>
+    <string name="first_air_date_text">Fecha de estreno:</string>
+    <string name="movie_title_text">Movie Title</string>
 
 </resources>
